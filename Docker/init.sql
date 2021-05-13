@@ -1,0 +1,5 @@
+CREATE USER myUser;
+
+CREATE DATABASE myApp_dev;
+GRANT ALL PRIVILEGES ON DATABASE myApp_dev TO myUser;
+
