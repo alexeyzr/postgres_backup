@@ -2,7 +2,7 @@ version: "3.3"
 services:
   postgres:
     build:
-      context: ./Docker
+      context: ./Postgres
       dockerfile: postgres.Dockerfile
     env_file:
       - postgres.env
@@ -12,7 +12,9 @@ services:
     ports:
       - "5432:5432"
   pgbackups:
-    image: prodrigestivill/postgres-backup-local
+    build:
+      context: ./PostgresBackup
+      dockerfile: alpine.Dockerfile
     restart: always
     user: postgres:postgres
     volumes:
@@ -23,16 +25,12 @@ services:
         - postgres
     env_file:
       - postgres.env
+      - aws.env
+      - rclone.env
     environment:
+            - SAVE_TO_DISK=true
             - POSTGRES_HOST=postgres
-        #   - POSTGRES_DB=database
-        #   - POSTGRES_USER=username
-        #   - POSTGRES_PASSWORD=password
-        #   - POSTGRES_PASSWORD_FILE=/run/secrets/db_password <-- alternative for POSTGRES_PASSWORD (to use with docker secrets)
             - POSTGRES_EXTRA_OPTS=-Z6 --schema=public --blobs
             - SCHEDULE=@daily
-            - BACKUP_KEEP_DAYS=7
-            - BACKUP_KEEP_WEEKS=4
-            - BACKUP_KEEP_MONTHS=6
             - HEALTHCHECK_PORT=8080
     
